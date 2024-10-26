@@ -114,3 +114,19 @@ macro_rules! create_unit_operations {
         }
     };
 }
+
+#[macro_export]
+macro_rules! create_unit {
+    ($struct_name:ident, $( $unit_name:ident => $conversion_factor:expr ),+ ) => {
+        paste::paste!{
+        #[derive(Debug, Clone, Copy)]
+        pub struct $struct_name {
+            base_magnitude: f64,
+        }
+
+        crate::create_converters!($struct_name, $( $unit_name => $conversion_factor ),+);
+        crate::create_operations!($struct_name);
+        crate::create_dimension!($struct_name);
+        }
+    };
+}
