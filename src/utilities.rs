@@ -82,6 +82,32 @@ macro_rules! create_converters {
 }
 
 #[macro_export]
+/// This macro generates common arithmetic and comparison operations for a given struct.
+/// 
+/// # Parameters
+/// - `$struct_name`: The name of the struct for which the operations will be implemented.
+/// 
+/// # Generated Implementations
+/// - `std::ops::Add`: Adds two instances of the struct.
+/// - `std::ops::Sub`: Subtracts one instance of the struct from another.
+/// - `std::ops::Mul<f64>`: Multiplies an instance of the struct by a scalar of type `f64`.
+/// - `std::ops::Div<f64>`: Divides an instance of the struct by a scalar of type `f64`.
+/// - `std::cmp::PartialEq`: Compares two instances of the struct for equality.
+/// 
+/// # Example
+/// ```rust
+/// struct MyStruct(f64);
+/// 
+/// create_operations!(MyStruct);
+/// 
+/// let a = MyStruct(1.0);
+/// let b = MyStruct(2.0);
+/// let c = a + b; // MyStruct(3.0)
+/// let d = c - a; // MyStruct(2.0)
+/// let e = d * 2.0; // MyStruct(4.0)
+/// let f = e / 2.0; // MyStruct(2.0)
+/// assert_eq!(d, f); // true
+/// ```
 macro_rules! create_operations {
     ($struct_name:ident) => {
         impl std::ops::Add for $struct_name {
@@ -125,6 +151,7 @@ macro_rules! create_operations {
 }
 
 #[macro_export]
+
 macro_rules! create_dimension {
     ($struct_name:ident) => {
         impl crate::dimension::Dimension for $struct_name {
@@ -140,6 +167,35 @@ macro_rules! create_dimension {
 }
 
 #[macro_export]
+/// This macro generates multiplication and division operations between two different unit structures, resulting in a third unit structure.
+/// 
+/// # Parameters
+/// - `$lhs_struct`: The left-hand side unit structure for the operation.
+/// - `$rhs_struct`: The right-hand side unit structure for the operation.
+/// - `$result_struct`: The resulting unit structure from the operation.
+/// 
+/// # Generated Implementations
+///     
+/// - `std::ops::Mul<$rhs_struct>`: Multiplies an instance of the left-hand side struct by an instance of the right-hand side struct, resulting in an instance of the result struct.
+/// - `std::ops::Div<$rhs_struct>`: Divides an instance of the left-hand side struct by an instance of the right-hand side struct, resulting in an instance of the result struct.
+/// 
+/// 
+/// # Example
+/// ```rust
+/// struct Length(f64);
+/// struct Time(f64);
+/// struct Speed(f64);
+/// 
+/// create_unit_operations!(Length / Time => Speed);
+/// 
+/// let length = Length(100.0);
+/// let time = Time(10.0);
+/// let speed = length / time; // Speed(10.0)
+/// 
+/// ```
+/// 
+/// # Note
+/// This macro is intended to be used in conjunction with the `create_unit` macro to define unit operations between different unit structures.
 macro_rules! create_unit_operations {
     ($lhs_struct:ident * $rhs_struct:ident => $result_struct:ident) => {
         impl std::ops::Mul<$rhs_struct> for $lhs_struct {
@@ -163,6 +219,33 @@ macro_rules! create_unit_operations {
 }
 
 #[macro_export]
+/// This macro combines the functionality of `create_converters`, `create_operations`, and `create_dimension` to create a complete unit structure with all necessary methods and traits.
+/// 
+/// # Parameters
+/// - `$struct_name`: The name of the struct representing the unit.
+/// - `$( $unit_name:ident => $conversion_factor:expr ),+`: A list of unit names and their conversion factors to the base unit.
+/// 
+/// # Generated Implementations
+/// 
+/// - Conversion methods for each unit in the list.
+/// - Arithmetic operations (`Add`, `Sub`, `Mul`, `Div`) for the unit.
+/// - `Dimension` trait implementation for the unit.
+/// 
+/// # Example
+/// ```rust
+/// create_unit!(Length, meter => 1.0, kilometer => 1000.0);
+/// ```
+/// 
+/// This will generate a `Length` struct with conversion methods, arithmetic operations, and the `Dimension` trait implementation.
+/// 
+/// # Note
+/// This macro is a convenience method to create a complete unit structure with all necessary methods and traits.
+/// It is recommended to use this macro instead of manually calling `create_converters`, `create_operations`, and `create_dimension`.
+/// 
+/// # See Also
+/// - `create_converters`
+/// - `create_operations`
+/// - `create_dimension`
 macro_rules! create_unit {
     ($struct_name:ident, $( $unit_name:ident => $conversion_factor:expr ),+ ) => {
         paste::paste!{
