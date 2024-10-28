@@ -1,3 +1,130 @@
+/*!
+This module defines various units of measurement and their conversions. It uses macros to create unit types and their associated conversion functions. Additionally, it defines operations between units to derive new units.
+
+## Units
+
+### Distance
+- meters
+- feet
+- inches
+- miles
+- kilometers
+- nautical_miles
+- furlongs
+
+### Time
+- seconds
+- minutes
+- hours
+- days
+- years
+- fortnights
+
+### LinearVelocity
+- meters_per_second
+- feet_per_second
+- inches_per_second
+- miles_per_hour
+- kilometers_per_hour
+- knots
+- furlongs_per_fortnight
+
+### Angle
+- radians
+- rotations
+- degrees
+- gradians
+- arcminutes
+
+### AngularVelocity
+- radians_per_second
+- rotations_per_second
+- rotations_per_minute
+- degrees_per_second
+- gradians_per_second
+- arcminutes_per_second
+
+### Mass
+- kilograms
+- grams
+- pounds
+- ounces
+- stones
+- tons
+
+### Force
+- newtons
+- pounds_force
+- dynes
+
+### Torque
+- newton_meters
+- pound_feet
+- pound_inches
+
+### Temperature
+- kelvin
+- celsius
+- fahrenheit
+
+### Energy
+- joules
+- kilojoules
+- calories
+- kilocalories
+- watt_hours
+- kilowatt_hours
+
+### Power
+- watts
+- kilowatts
+- horsepower
+
+### Pressure
+- pascals
+- kilopascals
+- bar
+- psi
+- atmospheres
+
+### ElectricPotential
+- volts
+- millivolts
+- microvolts
+
+### Current
+- amperes
+- milliamperes
+- microamperes
+
+### AngularAcceleration
+- radians_per_second_squared
+- rotations_per_second_squared
+- degrees_per_second_squared
+- gradians_per_second_squared
+- arcminutes_per_second_squared
+
+### LinearAcceleration
+- meters_per_second_squared
+- feet_per_second_squared
+- inches_per_second_squared
+- miles_per_hour_squared
+- kilometers_per_hour_squared
+
+## Unit Operations
+- Distance / Time => LinearVelocity
+- Angle / Time => AngularVelocity
+- Force * Distance => Torque
+- Energy / Time => Power
+- Power / ElectricPotential => Current
+- Power / Current => ElectricPotential
+- ElectricPotential * Current => Power
+- LinearVelocity / Time => LinearAcceleration
+- AngularVelocity / Time => AngularAcceleration
+
+## Tests
+The module includes comprehensive tests for each unit type and their conversions, ensuring accuracy within a defined epsilon value.
+*/
 use crate::{create_unit_operations, create_unit};
 
 
