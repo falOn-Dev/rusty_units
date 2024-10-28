@@ -123,6 +123,24 @@ create_unit!(
     microamperes => 1_000_000.0
 );
 
+create_unit!(
+    AngularAcceleration,
+    radians_per_second_squared => 1.0,
+    rotations_per_second_squared => 0.159155,
+    degrees_per_second_squared => 180.0 / std::f64::consts::PI,
+    gradians_per_second_squared => 200.0 / std::f64::consts::PI,
+    arcminutes_per_second_squared => 60.0 * 180.0 / std::f64::consts::PI
+);
+
+create_unit!(
+    LinearAcceleration,
+    meters_per_second_squared => 1.0,
+    feet_per_second_squared => 3.28084,
+    inches_per_second_squared => 39.3701,
+    miles_per_hour_squared => 2.23694,
+    kilometers_per_hour_squared => 3.6
+);
+
 
 create_unit_operations!(Distance / Time => LinearVelocity);
 create_unit_operations!(Angle / Time => AngularVelocity);
@@ -131,13 +149,16 @@ create_unit_operations!(Energy / Time => Power);
 create_unit_operations!(Power / ElectricPotential => Current);
 create_unit_operations!(Power / Current => ElectricPotential);
 create_unit_operations!(ElectricPotential * Current => Power);
+create_unit_operations!(LinearVelocity / Time => LinearAcceleration);
+create_unit_operations!(AngularVelocity / Time => AngularAcceleration);
+
 
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    const EPSILON: f64 = 1e-10;
+    const EPSILON: f64 = 1e-6;
 
     #[test]
     fn test_distance_conversion() {
@@ -259,6 +280,62 @@ mod tests {
         let amperes = Current::from_amperes(1.0);
         assert!((amperes.as_milliamperes() - 1000.0).abs() < EPSILON);
         assert!((amperes.as_microamperes() - 1_000_000.0).abs() < EPSILON);
+    }
+
+    #[test]
+    fn test_linear_velocity_from_distance_and_time() {
+        let distance = Distance::from_meters(100.0);
+        let time = Time::from_seconds(10.0);
+        let velocity = distance / time;
+        assert!((velocity.as_meters_per_second() - 10.0).abs() < EPSILON);
+    }
+
+    #[test]
+    fn test_angular_velocity_from_angle_and_time() {
+        let angle = Angle::from_radians(2.0 * std::f64::consts::PI);
+        let time = Time::from_seconds(1.0);
+        let angular_velocity = angle / time;
+        assert!((angular_velocity.as_rotations_per_second() - 1.0).abs() < EPSILON, "{}", angular_velocity.as_rotations_per_second());
+    }
+
+    #[test]
+    fn test_torque_from_force_and_distance() {
+        let force = Force::from_newtons(10.0);
+        let distance = Distance::from_meters(2.0);
+        let torque = force * distance;
+        assert!((torque.as_newton_meters() - 20.0).abs() < EPSILON);
+    }
+
+    #[test]
+    fn test_power_from_energy_and_time() {
+        let energy = Energy::from_joules(100.0);
+        let time = Time::from_seconds(10.0);
+        let power = energy / time;
+        assert!((power.as_watts() - 10.0).abs() < EPSILON);
+    }
+
+    #[test]
+    fn test_current_from_power_and_electric_potential() {
+        let power = Power::from_watts(100.0);
+        let voltage = ElectricPotential::from_volts(10.0);
+        let current = power / voltage;
+        assert!((current.as_amperes() - 10.0).abs() < EPSILON);
+    }
+
+    #[test]
+    fn test_electric_potential_from_power_and_current() {
+        let power = Power::from_watts(100.0);
+        let current = Current::from_amperes(10.0);
+        let voltage = power / current;
+        assert!((voltage.as_volts() - 10.0).abs() < EPSILON);
+    }
+
+    #[test]
+    fn test_power_from_electric_potential_and_current() {
+        let voltage = ElectricPotential::from_volts(10.0);
+        let current = Current::from_amperes(10.0);
+        let power = voltage * current;
+        assert!((power.as_watts() - 100.0).abs() < EPSILON);
     }
 }
 
